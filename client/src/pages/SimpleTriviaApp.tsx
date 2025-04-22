@@ -294,13 +294,13 @@ export default function SimpleTriviaApp() {
 
   // Category selection component
   const CategorySelection = () => (
-    <div className="category-selection p-4">
-      <h2 className="text-xl font-bold mb-4 text-center">Select a Category</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    <div className="category-selection p-4 max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center">Select a Category</h2>
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {categories && categories.map((category: Category) => (
           <div 
             key={category.id}
-            className={`p-4 rounded-lg border-2 cursor-pointer transition-all transform hover:scale-105 hover:shadow-md
+            className={`p-4 rounded-lg border-2 cursor-pointer transition-all transform hover:scale-102 hover:shadow-md
               ${selectedCategory?.id === category.id 
                 ? 'border-primary bg-primary/10' 
                 : 'border-gray-200 bg-white hover:border-primary/40'}`}
@@ -322,7 +322,7 @@ export default function SimpleTriviaApp() {
                   category.name === "Art" ? "🎨" : "❓"
                 : category.icon}
               </span>
-              <h3 className="font-medium text-center">{category.name}</h3>
+              <h3 className="font-medium text-center text-sm sm:text-base">{category.name}</h3>
               <div className="mt-2 flex gap-1 flex-wrap justify-center">
                 {category.tags.slice(0, 2).map((tag, idx) => (
                   <Badge key={idx} variant="outline" className="text-xs">
@@ -342,9 +342,9 @@ export default function SimpleTriviaApp() {
     if (!selectedCategory) return null;
     
     return (
-      <div className="difficulty-selection p-4 mt-4">
+      <div className="difficulty-selection p-4 mt-2 max-w-5xl mx-auto">
         <h2 className="text-xl font-bold mb-4 text-center">Select Difficulty</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl mx-auto">
           {/* Easy Difficulty */}
           <div 
             className={`p-4 rounded-lg border-2 cursor-pointer transition-all
@@ -414,13 +414,14 @@ export default function SimpleTriviaApp() {
     if (!selectedCategory || !selectedDifficulty) return null;
     
     return (
-      <div className="text-center mt-6 mb-4">
+      <div className="text-center mt-6 mb-8 max-w-5xl mx-auto">
         <Button 
-          className="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full flex items-center" 
+          className="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full flex items-center mx-auto" 
           onClick={() => {
             playSound("click");
             fetchQuestionsForQuiz();
           }}
+          size="lg"
         >
           Start Quiz <FaChevronRight className="ml-2" />
         </Button>
@@ -435,10 +436,10 @@ export default function SimpleTriviaApp() {
     const currentQuestion = questions[quizState.currentQuestionIndex];
     
     return (
-      <div className="quiz-container p-4">
+      <div className="quiz-container p-4 max-w-3xl mx-auto">
         {/* Quiz Header */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-1">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {/* Power-ups */}
             <Button 
               variant="outline" 
@@ -469,7 +470,7 @@ export default function SimpleTriviaApp() {
             </Button>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <span className="font-medium">Score: {quizState.score}</span>
             <div className={`ml-2 px-3 py-1 rounded-full text-white font-medium ${quizState.timeLeft <= 5 ? 'bg-red-500 animate-pulse' : 'bg-primary'}`}>
               {quizState.timeLeft}s
@@ -492,6 +493,14 @@ export default function SimpleTriviaApp() {
         
         {/* Question */}
         <div className="mb-6 p-4 bg-white rounded-lg shadow">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="text-xs font-medium px-2 py-1 bg-primary/10 text-primary rounded-full">
+              {currentQuestion.category}
+            </span>
+            <span className="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-700 rounded-full capitalize">
+              {currentQuestion.difficulty}
+            </span>
+          </div>
           <p className="text-lg font-medium" dangerouslySetInnerHTML={{ __html: currentQuestion.question }}></p>
         </div>
         
@@ -508,7 +517,7 @@ export default function SimpleTriviaApp() {
             
             return (
               <motion.button
-                key={index}
+                key={option} // Use option as key instead of index for better stability
                 className={`p-3 border-2 rounded-lg text-left transition-all ${
                   showCorrect
                     ? 'bg-green-50 border-green-500 text-green-800'
@@ -520,18 +529,18 @@ export default function SimpleTriviaApp() {
                 } ${quizState.isAnswerSelected && !showCorrect && !showIncorrect ? 'opacity-70' : ''}`}
                 onClick={() => handleSelectOption(option)}
                 disabled={quizState.isAnswerSelected || quizState.showFeedback}
-                // Only apply animation when the question changes
-                initial={false}
+                // Disable animations to prevent repeating
+                initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0 }}
               >
                 <div className="flex items-center">
-                  <span className="mr-2 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 text-primary font-medium">
+                  <span className="mr-2 w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-gray-100 text-primary font-medium">
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span dangerouslySetInnerHTML={{ __html: option }}></span>
-                  {showCorrect && <FaCheckCircle className="ml-auto text-green-600" />}
-                  {showIncorrect && <FaTimesCircle className="ml-auto text-red-600" />}
+                  <span className="break-words" dangerouslySetInnerHTML={{ __html: option }}></span>
+                  {showCorrect && <FaCheckCircle className="ml-auto flex-shrink-0 text-green-600" />}
+                  {showIncorrect && <FaTimesCircle className="ml-auto flex-shrink-0 text-red-600" />}
                 </div>
               </motion.button>
             );
@@ -589,13 +598,13 @@ export default function SimpleTriviaApp() {
       : quizState.userAnswers.slice(0, 3);
     
     return (
-      <div className="results p-4">
+      <div className="results p-4 max-w-4xl mx-auto">
         <div className="bg-white rounded-lg p-6 shadow mb-6">
           <h2 className="text-2xl font-bold text-center text-primary mb-4">Quiz Complete!</h2>
           
           <div className="mb-6 text-center">
-            <div className="w-24 h-24 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-3">
-              <span className="text-3xl font-bold text-primary">{quizState.score}</span>
+            <div className="w-28 h-28 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <span className="text-4xl font-bold text-primary">{quizState.score}</span>
             </div>
             <p className="text-gray-600">Your Score</p>
           </div>
@@ -603,25 +612,25 @@ export default function SimpleTriviaApp() {
           {/* Performance Summary */}
           <div className="grid grid-cols-3 gap-3 mb-6 text-center">
             <div className="bg-green-50 p-3 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{quizState.correctAnswers}</div>
+              <div className="text-xl sm:text-2xl font-bold text-green-600">{quizState.correctAnswers}</div>
               <p className="text-gray-600 text-xs">Correct</p>
             </div>
             
             <div className="bg-red-50 p-3 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">{quizState.incorrectAnswers}</div>
+              <div className="text-xl sm:text-2xl font-bold text-red-600">{quizState.incorrectAnswers}</div>
               <p className="text-gray-600 text-xs">Incorrect</p>
             </div>
             
             <div className="bg-purple-50 p-3 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">{calculateAccuracy()}</div>
+              <div className="text-xl sm:text-2xl font-bold text-purple-600">{calculateAccuracy()}</div>
               <p className="text-gray-600 text-xs">Accuracy</p>
             </div>
           </div>
           
           {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-3">
             <Button 
-              className="bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-full"
+              className="bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-6 rounded-full"
               onClick={() => {
                 playSound("click");
                 setSelectedCategory(null);
@@ -635,7 +644,7 @@ export default function SimpleTriviaApp() {
             
             <Button 
               variant="outline"
-              className="border-primary text-primary hover:bg-primary/5 font-semibold py-2 px-4 rounded-full"
+              className="border-primary text-primary hover:bg-primary/5 font-semibold py-2 px-6 rounded-full"
               onClick={() => {
                 playSound("click");
                 setIsQuizActive(false);
@@ -650,19 +659,19 @@ export default function SimpleTriviaApp() {
         
         {/* Answer Review */}
         <div className="bg-white rounded-lg p-4 shadow">
-          <h3 className="font-bold text-primary mb-3">Question Review</h3>
+          <h3 className="font-bold text-xl text-primary mb-4">Question Review</h3>
           
           {questionsToShow.map((answer, index) => {
             const question = questions[answer.questionIndex];
             if (!question) return null;
             
             return (
-              <div key={index} className="mb-3 p-3 border-b border-gray-100">
-                <p className="font-medium text-sm mb-1" dangerouslySetInnerHTML={{ __html: question.question }} />
-                <div className={`flex items-center text-sm ${answer.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                  {answer.isCorrect ? <FaCheckCircle className="mr-1" /> : <FaTimesCircle className="mr-1" />}
-                  <p>
-                    Your answer: {" "}
+              <div key={index} className="mb-4 p-4 border border-gray-100 rounded-lg">
+                <p className="font-medium text-sm mb-2" dangerouslySetInnerHTML={{ __html: question.question }} />
+                <div className={`flex flex-wrap items-center text-sm ${answer.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {answer.isCorrect ? <FaCheckCircle className="mr-1 flex-shrink-0" /> : <FaTimesCircle className="mr-1 flex-shrink-0" />}
+                  <div className="flex-grow">
+                    <span className="font-medium mr-1">Your answer:</span>
                     <span className="font-medium">
                       {answer.answer === "skipped" ? "Skipped" : answer.answer && answer.answer !== null 
                         ? (
@@ -671,11 +680,12 @@ export default function SimpleTriviaApp() {
                         : "Time expired"
                       }
                     </span>
-                  </p>
+                  </div>
                 </div>
                 {!answer.isCorrect && (
-                  <p className="text-gray-600 text-sm mt-1 ml-5">
-                    Correct answer: <span className="font-medium" dangerouslySetInnerHTML={{ __html: answer.correctAnswer }} />
+                  <p className="text-gray-600 text-sm mt-2 pl-5 border-t border-gray-50 pt-2">
+                    <span className="font-medium">Correct answer:</span>{" "}
+                    <span className="font-medium" dangerouslySetInnerHTML={{ __html: answer.correctAnswer }} />
                   </p>
                 )}
               </div>
@@ -683,13 +693,15 @@ export default function SimpleTriviaApp() {
           })}
           
           {quizState.userAnswers.length > 3 && (
-            <Button 
-              variant="link"
-              className="text-primary text-sm"
-              onClick={() => setShowAllQuestions(!showAllQuestions)}
-            >
-              {showAllQuestions ? 'Show Fewer Questions' : 'Show All Questions'}
-            </Button>
+            <div className="text-center mt-4">
+              <Button 
+                variant="link"
+                className="text-primary text-sm"
+                onClick={() => setShowAllQuestions(!showAllQuestions)}
+              >
+                {showAllQuestions ? 'Show Fewer Questions' : 'Show All Questions'}
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -698,28 +710,35 @@ export default function SimpleTriviaApp() {
 
   // Main component render
   return (
-    <div className="simple-trivia-app">
-      {isCategoriesLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <Spinner size="lg" />
+    <div className="simple-trivia-app bg-gray-50 min-h-screen pb-10">
+      <div className="container mx-auto px-4 pt-6">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-primary">Trivia Challenge</h1>
+          <p className="text-gray-600">Test your knowledge with fun trivia questions!</p>
         </div>
-      ) : (
-        <div>
-          {/* Show quiz content when active */}
-          {isQuizActive ? (
-            <Quiz />
-          ) : showResults ? (
-            <Results />
-          ) : (
-            /* Show category/difficulty selection when not in quiz */
-            <div>
-              <CategorySelection />
-              {selectedCategory && <DifficultySelection />}
-              <StartButton />
-            </div>
-          )}
-        </div>
-      )}
+        
+        {isCategoriesLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Spinner size="lg" />
+          </div>
+        ) : (
+          <div>
+            {/* Show quiz content when active */}
+            {isQuizActive ? (
+              <Quiz />
+            ) : showResults ? (
+              <Results />
+            ) : (
+              /* Show category/difficulty selection when not in quiz */
+              <div>
+                <CategorySelection />
+                {selectedCategory && <DifficultySelection />}
+                <StartButton />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
